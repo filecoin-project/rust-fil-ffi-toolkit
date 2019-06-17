@@ -7,5 +7,4 @@ heaptrack*
 .bencher
 *.profile
 *.heap
-rust-fil-proofs.config.toml
 **/*.pc

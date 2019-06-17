@@ -1,9 +1,6 @@
-# Filecoin Sector Builder
+# Rust Filecoin FFI Toolkit
 
-
-## Contributing
-
-See [Contributing](CONTRIBUTING.md)
+> A collection of tools useful for working with the Rust Filecoin FFI.
 
 ## License
 
