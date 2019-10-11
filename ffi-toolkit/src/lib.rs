@@ -2,6 +2,16 @@ use std::borrow::Cow;
 use std::ffi::{CStr, CString};
 use std::path::PathBuf;
 
+#[repr(C)]
+#[derive(PartialEq, Debug)]
+pub enum FCPResponseStatus {
+    // Don't use FCPSuccess, since that complicates description of 'successful' verification.
+    FCPNoError = 0,
+    FCPUnclassifiedError = 1,
+    FCPCallerError = 2,
+    FCPReceiverError = 3,
+}
+
 // produce a C string from a Rust string
 pub fn rust_str_to_c_str<T: Into<String>>(s: T) -> *mut libc::c_char {
     CString::new(s.into()).unwrap().into_raw()
