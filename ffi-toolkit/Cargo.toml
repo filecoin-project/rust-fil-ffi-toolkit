@@ -10,6 +10,4 @@ readme = "README.md"
 
 [dependencies]
 libc = "0.2"
-
-[dev-dependencies]
 drop_struct_macro_derive = { version = "0.3", path = "../drop-struct-macro-derive" }
