@@ -11,7 +11,7 @@ struct FieldNameType {
     field_type: proc_macro2::TokenStream,
 }
 
-/// The actual code to free the *const pointers
+/// The actual code to free the *mut pointers
 impl quote::ToTokens for FieldNameType {
     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
         let field_type = &self.field_type;
@@ -72,13 +72,13 @@ pub fn drop_struct_macro_derive(input: TokenStream) -> TokenStream {
     // A list of fields that should get dropped
     let mut to_be_dropped = Vec::new();
 
-    // Only take *const pointers into account (also not *mut)
+    // Only take *mut pointers into account (also not *mut)
     match ast.data {
         syn::Data::Struct(ref data_struct) => {
             if let syn::Fields::Named(ref fields_named) = data_struct.fields {
                 for field in fields_named.named.iter() {
                     if let syn::Type::Ptr(ref type_ptr) = field.ty {
-                        if type_ptr.const_token.is_some() {
+                        if type_ptr.mutability.is_some() {
                             if let syn::Type::Path(ref type_path) = *type_ptr.elem {
                                 let field_name = field.ident.clone().unwrap().to_string();
                                 let field_type = type_path.path.clone().into_token_stream();

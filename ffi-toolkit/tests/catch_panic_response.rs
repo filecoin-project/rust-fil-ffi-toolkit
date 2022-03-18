@@ -13,7 +13,7 @@ use ffi_toolkit::{
 #[derive(DropStructMacro)]
 pub struct BasicResponse {
     pub status_code: FCPResponseStatus,
-    pub error_msg: *const libc::c_char,
+    pub error_msg: *mut libc::c_char,
     pub is_valid: bool,
 }
 
@@ -21,7 +21,7 @@ impl Default for BasicResponse {
     fn default() -> Self {
         BasicResponse {
             status_code: FCPResponseStatus::FCPNoError,
-            error_msg: ptr::null(),
+            error_msg: ptr::null_mut(),
             is_valid: false,
         }
     }
@@ -55,7 +55,7 @@ fn does_not_panic() {
         let response = fn_does_not_panic();
         assert!((*response).is_valid);
         assert_eq!((*response).status_code, FCPResponseStatus::FCPNoError);
-        assert_eq!((*response).error_msg, ptr::null());
+        assert!((*response).error_msg.is_null());
     }
 }
 
@@ -66,7 +66,7 @@ fn does_not_panic_with_catch_panic_response() {
         let response = fn_does_not_panic_with_catch_panic();
         assert!((*response).is_valid);
         assert_eq!((*response).status_code, FCPResponseStatus::FCPNoError);
-        assert_eq!((*response).error_msg, ptr::null());
+        assert!((*response).error_msg.is_null());
     }
 }
 

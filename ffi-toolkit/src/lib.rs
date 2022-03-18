@@ -16,18 +16,18 @@ pub enum FCPResponseStatus {
 /// All FFI responses need to implement this trait in order to be able to use `catch_panic()`
 pub trait CodeAndMessage {
     /// Set the status code and error message
-    fn set_error(&mut self, code_and_message: (FCPResponseStatus, *const libc::c_char));
+    fn set_error(&mut self, code_and_message: (FCPResponseStatus, *mut libc::c_char));
 }
 
 /// A simple macro to create implementations for the `CodeAndMessage` trait
 ///
 /// The only requirement is that the response has an `status_code: FCPResponseStatus` and
-/// `error_msg: *const libc::c_char` field.
+/// `error_msg: *mut libc::c_char` field.
 #[macro_export]
 macro_rules! code_and_message_impl {
     { $response:ty } => {
         impl CodeAndMessage for $response {
-            fn set_error(&mut self, (code, message): (FCPResponseStatus, *const libc::c_char)) {
+            fn set_error(&mut self, (code, message): (FCPResponseStatus, *mut libc::c_char)) {
                 self.status_code = code;
                 self.error_msg = message;
             }
