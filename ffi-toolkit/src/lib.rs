@@ -35,24 +35,26 @@ macro_rules! code_and_message_impl {
     }
 }
 
-// produce a C string from a Rust string
-pub fn rust_str_to_c_str<T: Into<String>>(s: T) -> *mut libc::c_char {
-    CString::new(s.into()).unwrap().into_raw()
+/// Produces a C string from a Rust string.
+///
+/// If the Rust string contained a nul byte, `None` is returned.
+pub fn rust_str_to_c_str<T: Into<String>>(s: T) -> Option<*mut libc::c_char> {
+    CString::new(s.into()).map(|s| s.into_raw()).ok()
 }
 
-// consume a C string-pointer and free its memory
+/// Consume a C string-pointer and free its memory.
 pub unsafe fn free_c_str(ptr: *mut libc::c_char) {
     if !ptr.is_null() {
         let _ = CString::from_raw(ptr);
     }
 }
 
-// return a forgotten raw pointer to something of type T
+/// Return a forgotten raw pointer to something of type T.
 pub fn raw_ptr<T>(thing: T) -> *mut T {
     Box::into_raw(Box::new(thing))
 }
 
-// transmutes a C string to a copy-on-write Rust string
+/// Transmutes a C string to a copy-on-write Rust string.
 pub unsafe fn c_str_to_rust_str<'a>(x: *const libc::c_char) -> Cow<'a, str> {
     if x.is_null() {
         Cow::from("")
@@ -61,18 +63,12 @@ pub unsafe fn c_str_to_rust_str<'a>(x: *const libc::c_char) -> Cow<'a, str> {
     }
 }
 
-// cast from mutable to constant reference
-pub unsafe fn cast_const<'a, T>(x: *mut T) -> &'a T {
-    assert!(!x.is_null(), "Object argument was null");
-    (&(*x))
-}
-
-// transmutes a C string to a PathBuf
+/// Transmutes a C string to a PathBuf.
 pub unsafe fn c_str_to_pbuf(x: *const libc::c_char) -> PathBuf {
-    PathBuf::from(String::from(c_str_to_rust_str(x)))
+    c_str_to_rust_str(x).to_string().into()
 }
 
-///// Catch panics and return an error response
+/// Catch panics and return an error response
 pub fn catch_panic_response<F, T>(callback: F) -> *mut T
 where
     T: Default + CodeAndMessage,
