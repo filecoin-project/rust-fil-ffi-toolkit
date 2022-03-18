@@ -51,11 +51,13 @@ impl quote::ToTokens for FieldNameType {
                 );
                 let field_name_ptr = Ident::new(&self.field_name, Span::call_site());
                 let gen = quote! {
-                    drop(Vec::from_raw_parts(
+                    if !self.#field_name_ptr.is_null() {
+                        drop(Vec::from_raw_parts(
                             self.#field_name_ptr as *mut #field_type,
                             self.#field_name_len,
                             self.#field_name_len,
-                    ));
+                        ));
+                    }
                 };
                 gen.to_tokens(tokens);
             }
